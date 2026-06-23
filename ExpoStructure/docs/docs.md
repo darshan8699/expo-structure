@@ -11,8 +11,9 @@
 5. [Run on Android](#run-on-android)
 6. [Run on iOS](#run-on-ios)
 7. [Run on Web](#run-on-web)
-8. [Development Build](#development-build)
-9. [Troubleshooting](#troubleshooting)
+8. [Expo Go vs Development Build](#expo-go-vs-development-build)
+9. [Convert to Development Build](#convert-to-development-build)
+10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -143,33 +144,125 @@ npx expo export --platform web    # production build
 
 ---
 
-## Development Build
+## Expo Go vs Development Build
 
-Upgrade from Expo Go to a custom dev build with full native module support.
+### What is Expo Go?
+A free app from the App Store / Play Store. You scan a QR code and run your app instantly — no build needed. Great for learning and quick prototyping.
 
+### What is a Development Build?
+A custom version of Expo built specifically for your project. It supports any native npm package and behaves exactly like your production app — but with developer tools enabled.
+
+### Key Differences
+
+| Feature | Expo Go | Development Build |
+|---|---|---|
+| Setup time | Instant (just install the app) | ~10–20 min first time |
+| Custom native modules | ❌ Not supported | ✅ Fully supported |
+| Production behaviour | ❌ Sandbox only | ✅ Matches production |
+| Stripe / BLE / Camera | ❌ | ✅ |
+| Push notifications (full) | ❌ Limited | ✅ Full support |
+| TestFlight / Internal test | ❌ | ✅ |
+| App size | Larger (all Expo modules) | Smaller (only what you use) |
+| Best for | Prototyping / learning | Real app development |
+
+> **Rule of thumb:** Start with Expo Go. Switch to Development Build as soon as you need any native package (e.g. Stripe, Firebase, BLE, custom Camera).
+
+---
+
+## Convert to Development Build
+
+Follow these steps in order. Do them once per project.
+
+### Step 1 — Install EAS CLI
 ```bash
-# 1. Login to Expo
+npm install -g eas-cli
+```
+
+### Step 2 — Create a free Expo account
+Go to [expo.dev](https://expo.dev) → Sign Up (free)
+
+### Step 3 — Login via terminal
+```bash
 eas login
+# Enter your Expo email and password
+```
 
-# 2. Link project
+### Step 4 — Link your project to Expo
+```bash
 eas init
+# This adds a projectId to your app.json automatically
+```
 
-# 3. Configure EAS
+### Step 5 — Configure EAS build
+```bash
 eas build:configure
+# Creates eas.json in your project root
+```
 
-# 4. Install dev-client
+Your `eas.json` will look like this:
+```json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  }
+}
+```
+
+### Step 6 — Install expo-dev-client
+```bash
 npx expo install expo-dev-client
+```
 
-# 5. Build
+### Step 7 — Register your iOS device (iOS only, first time)
+```bash
+eas device:create
+# Follow the link shown to register your device UDID
+```
+
+### Step 8 — Build the development app
+```bash
+# Android
 eas build --profile development --platform android
+
+# iOS
 eas build --profile development --platform ios
 
-# 6. Register iOS device (first time)
-eas device:create
+# Both at once
+eas build --profile development --platform all
+```
+> ☁️ Builds run on EAS cloud servers. Takes ~10–20 min. You'll get a download link when done.
 
-# 7. Start with dev-client
+### Step 9 — Install the build on your device
+- **Android** → Download the `.apk` from the link → Install it on your device
+- **iOS** → Download the `.ipa` from the link → Install via the Expo dashboard
+
+### Step 10 — Start the dev server with dev-client
+```bash
 npx expo start --dev-client
 ```
+Open the installed development build app on your device → it connects to your Metro server automatically.
+
+---
+
+### Local Build (No EAS Cloud)
+
+If you prefer to build locally on your machine instead of using EAS cloud:
+
+```bash
+# Android (requires Android Studio)
+npx expo run:android
+
+# iOS (requires Xcode, macOS only)
+npx expo run:ios
+```
+> This generates `android/` and `ios/` folders in your project (like React Native CLI).
 
 ---
 
