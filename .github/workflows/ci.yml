@@ -162,7 +162,7 @@ jobs:
       # Android Development Build
       - name: 🚀 Trigger EAS Development Build (Android)
         if: |
-          (github.ref == 'refs/heads/develop' && github.event_name == 'push') ||
+          ((github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') && github.event_name == 'push') ||
           (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
         run: |
           cd ExpoStructure
@@ -171,7 +171,7 @@ jobs:
       # iOS Simulator Development Build
       - name: 🚀 Trigger EAS Development Build (iOS Simulator)
         if: |
-          (github.ref == 'refs/heads/develop' && github.event_name == 'push') ||
+          ((github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') && github.event_name == 'push') ||
           (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
         run: |
           cd ExpoStructure
@@ -185,10 +185,9 @@ jobs:
           cd ExpoStructure
           eas build --platform ${{ github.event.inputs.platform }} --profile staging --non-interactive
 
-      # Production Build (Triggered on push to main or manually)
+      # Production Build (Triggered manually)
       - name: 🚀 Trigger EAS Production Build & Submit
         if: |
-          (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
           (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'production')
         run: |
           cd ExpoStructure
