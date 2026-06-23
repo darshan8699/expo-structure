@@ -1,0 +1,200 @@
+name: Continuous Integration & Deployment (CI/CD)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "Type of EAS build to trigger"
+        required: true
+        type: choice
+        default: "development"
+        options:
+          - "development"
+          - "staging"
+          - "production"
+          - "none"
+      platform:
+        description: "EAS build platform"
+        required: true
+        type: choice
+        default: "all"
+        options:
+          - "all"
+          - "android"
+          - "ios"
+
+jobs:
+  # Job 1: Run validations on the Expo project
+  expo-ci:
+    name: Expo Structure CI
+    runs-on: ubuntu-latest
+    outputs:
+      expo_changed: ${{ steps.filter.outputs.expo }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Detect Changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            expo:
+              - 'ExpoStructure/**'
+
+      - name: 🟢 Setup Node.js
+        if: steps.filter.outputs.expo == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: ExpoStructure/package-lock.json
+
+      - name: 📦 Install Dependencies
+        if: steps.filter.outputs.expo == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd ExpoStructure
+          npm ci
+
+      - name: 🧹 Run Lint & Type Checks
+        if: steps.filter.outputs.expo == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd ExpoStructure
+          npm run lint
+
+      - name: 🧪 Run Unit Tests
+        if: steps.filter.outputs.expo == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd ExpoStructure
+          npm run test
+
+      - name: 🏥 Run Expo Doctor
+        if: steps.filter.outputs.expo == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd ExpoStructure
+          npm run doctor
+
+  # Job 2: Run validations on the React Native CLI project
+  rn-cli-ci:
+    name: React Native CLI Structure CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Detect Changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            rn_cli:
+              - 'ReactNativeCliStructure/**'
+
+      - name: 🟢 Setup Node.js
+        if: steps.filter.outputs.rn_cli == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: ReactNativeCliStructure/package-lock.json
+
+      - name: 📦 Install Dependencies
+        if: steps.filter.outputs.rn_cli == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd ReactNativeCliStructure
+          npm ci
+
+      - name: 🧹 Run Lint
+        if: steps.filter.outputs.rn_cli == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd ReactNativeCliStructure
+          npm run lint
+
+      - name: 🧪 Run Unit Tests
+        if: steps.filter.outputs.rn_cli == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd ReactNativeCliStructure
+          npm run test
+
+      - name: 🏥 Run React Native Doctor
+        if: steps.filter.outputs.rn_cli == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        run: |
+          cd ReactNativeCliStructure
+          npm run doctor
+
+  # Job 3: Trigger EAS cloud builds for Expo
+  # To enable this, add EXPO_TOKEN to your GitHub repository Secrets.
+  eas-build:
+    name: Trigger EAS Build
+    needs: [expo-ci]
+    if: |
+      (needs.expo-ci.outputs.expo_changed == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type != 'none')
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: ExpoStructure/package-lock.json
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          patch-watchers: true
+
+      - name: 📦 Install Dependencies
+        run: |
+          cd ExpoStructure
+          npm ci
+
+      # Android Development Build
+      - name: 🚀 Trigger EAS Development Build (Android)
+        if: |
+          (github.ref == 'refs/heads/develop' && github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
+        run: |
+          cd ExpoStructure
+          eas build --platform android --profile development --non-interactive
+
+      # iOS Simulator Development Build
+      - name: 🚀 Trigger EAS Development Build (iOS Simulator)
+        if: |
+          (github.ref == 'refs/heads/develop' && github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
+        run: |
+          cd ExpoStructure
+          eas build --platform ios --profile development-simulator --non-interactive
+
+      # Staging Build (Triggered manually via workflow dispatch)
+      - name: 🚀 Trigger EAS Staging Build
+        if: |
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'staging')
+        run: |
+          cd ExpoStructure
+          eas build --platform ${{ github.event.inputs.platform }} --profile staging --non-interactive
+
+      # Production Build (Triggered on push to main or manually)
+      - name: 🚀 Trigger EAS Production Build & Submit
+        if: |
+          (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'production')
+        run: |
+          cd ExpoStructure
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PLATFORM="${{ github.event.inputs.platform }}"
+          else
+            PLATFORM="all"
+          fi
+          eas build --platform "$PLATFORM" --profile production --non-interactive --auto-submit
