@@ -20,17 +20,17 @@ CI/CD stands for **Continuous Integration** and **Continuous Delivery** (or **Co
 
 ```mermaid
 graph TD
-    A[Write Code & Commit] --> B[Continuous Integration (CI)]
+    A["Write Code & Commit"] --> B["Continuous Integration (CI)"]
     subgraph CI
-        B --> B1[Code Linting & Formatting]
-        B1 --> B2[Unit & Integration Tests]
-        B2 --> B3[Security / Secret Scans]
+        B --> B1["Code Linting & Formatting"]
+        B1 --> B2["Unit & Integration Tests"]
+        B2 --> B3["Security / Secret Scans"]
     end
-    B3 --> C[Continuous Delivery (CD)]
+    B3 --> C["Continuous Delivery (CD)"]
     subgraph CD
-        C --> C1[Build App Binaries / Bundles]
-        C1 --> C2[Automated E2E Tests]
-        C2 --> C3[Release/Deploy to Staging or Stores]
+        C --> C1["Build App Binaries / Bundles"]
+        C1 --> C2["Automated E2E Tests"]
+        C2 --> C3["Release/Deploy to Staging or Stores"]
     end
 ```
 
