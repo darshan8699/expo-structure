@@ -1,0 +1,20 @@
+# Exit immediately if any check fails
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Lint and test React Native CLI project
+echo "📦 Checking React Native CLI project..."
+cd ReactNativeCliStructure
+npm run lint
+npm run test
+cd ..
+
+# Lint and test Expo project
+echo "📦 Checking Expo project..."
+cd ExpoStructure
+npm run lint
+npm run test
+cd ..
+
+echo "✅ All checks passed successfully! Proceeding with commit."
