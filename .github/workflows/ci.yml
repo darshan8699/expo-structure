@@ -133,7 +133,7 @@ jobs:
     name: Trigger EAS Build
     needs: [expo-ci]
     if: |
-      (needs.expo-ci.outputs.expo_changed == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && github.event_name == 'push') ||
+      (needs.expo-ci.outputs.expo_changed == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push') ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type != 'none')
     runs-on: ubuntu-latest
     steps:
@@ -162,7 +162,7 @@ jobs:
       # Android Development Build
       - name: 🚀 Trigger EAS Development Build (Android)
         if: |
-          ((github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') && github.event_name == 'push') ||
+          (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
           (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
         run: |
           cd ExpoStructure
@@ -171,7 +171,7 @@ jobs:
       # iOS Simulator Development Build
       - name: 🚀 Trigger EAS Development Build (iOS Simulator)
         if: |
-          ((github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') && github.event_name == 'push') ||
+          (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
           (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
         run: |
           cd ExpoStructure
