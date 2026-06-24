@@ -26,7 +26,7 @@ export const useAuth = (): UseAuthReturn => {
         password,
       });
       setUser(response.data);
-    } catch (err) {
+    } catch {
       setError("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
