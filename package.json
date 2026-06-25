@@ -60,24 +60,64 @@
     "lint:fix": "expo lint --fix",
     "doctor": "npx expo-doctor",
     "test": "jest",
-    "test:e2e:local": "~/.maestro/bin/maestro --platform android test .maestro; ~/.maestro/bin/maestro --platform ios test .maestro"
+    "test:e2e:local": "~/.maestro/bin/maestro --platform android test .maestro; ~/.maestro/bin/maestro --platform ios test .maestro",
+    "prepare": "husky",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\""
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.1.0",
+    "@commitlint/config-conventional": "^21.1.0",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "^4.3.1",
     "@graphql-codegen/typescript": "^4.0.9",
     "@graphql-codegen/typescript-operations": "^4.2.3",
     "@graphql-codegen/typescript-react-apollo": "^4.3.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.8",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.1",
     "@types/jest": "^29.5.13",
     "@types/react": "~19.2.2",
     "@types/react-test-renderer": "^19.1.0",
     "dotenv": "^17.4.2",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~56.0.4",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-expo": "~56.0.0",
+    "lint-staged": "^17.0.8",
+    "prettier": "^3.8.4",
     "react-test-renderer": "19.2.3",
+    "semantic-release": "^25.0.5",
+    "semantic-release-expo": "^2.2.3",
     "typescript": "~6.0.3"
   },
-  "private": true
+  "private": true,
+  "release": {
+    "tagFormat": "v${version}",
+    "branches": [
+      "main",
+      "staging",
+      "develop"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "semantic-release-expo",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md",
+            "package.json",
+            "app.json"
+          ]
+        }
+      ]
+    ]
+  }
 }
