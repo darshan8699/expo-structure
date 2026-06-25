@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/react-native';
-import * as Updates from 'expo-updates';
-import Config from '@/config';
+import * as Sentry from "@sentry/react-native";
+import * as Updates from "expo-updates";
+import Config from "@/config";
 
 // ---------------------------------------------------------------------------
 // Initialise Sentry — call once at app start (before any other code)
@@ -17,7 +17,7 @@ export function initSentry(): void {
     // Disable in local development so noise stays out of the dashboard
     enabled: !__DEV__,
 
-    environment: __DEV__ ? 'development' : 'production',
+    environment: __DEV__ ? "development" : "production",
 
     // Send 20% of sessions as performance traces (raise in prod as needed)
     tracesSampleRate: 0.2,
@@ -45,8 +45,8 @@ export function initSentry(): void {
 function _tagExpoUpdate(): void {
   try {
     const scope = Sentry.getGlobalScope();
-    scope.setTag('expo-update-id', Updates.updateId ?? 'embedded');
-    scope.setTag('expo-is-embedded-update', String(Updates.isEmbeddedLaunch));
+    scope.setTag("expo-update-id", Updates.updateId ?? "embedded");
+    scope.setTag("expo-is-embedded-update", String(Updates.isEmbeddedLaunch));
   } catch {
     // Updates module may not be available in all environments
   }
@@ -55,11 +55,13 @@ function _tagExpoUpdate(): void {
 // ---------------------------------------------------------------------------
 // User identity — call after login / logout
 // ---------------------------------------------------------------------------
-export function setSentryUser(user: {
-  id: string;
-  email?: string;
-  username?: string;
-} | null): void {
+export function setSentryUser(
+  user: {
+    id: string;
+    email?: string;
+    username?: string;
+  } | null,
+): void {
   Sentry.setUser(user);
 }
 
@@ -93,7 +95,7 @@ export function captureError(
 // ---------------------------------------------------------------------------
 export function captureMessage(
   message: string,
-  level: Sentry.SeverityLevel = 'info',
+  level: Sentry.SeverityLevel = "info",
 ): void {
   Sentry.captureMessage(message, level);
 }
@@ -110,7 +112,7 @@ export function addBreadcrumb(options: {
   Sentry.addBreadcrumb({
     category: options.category,
     message: options.message,
-    level: options.level ?? 'info',
+    level: options.level ?? "info",
     data: options.data,
   });
 }

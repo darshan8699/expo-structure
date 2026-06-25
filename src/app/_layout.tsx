@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router';
-import { initSentry, wrap } from '@/services/sentry';
+import { Stack } from "expo-router";
+import { initSentry, wrap } from "@/services/sentry";
 
 // Initialise Sentry as early as possible (module-level, before first render)
 initSentry();
@@ -16,4 +16,3 @@ function RootLayout() {
 // - React error boundary (catches render crashes)
 // - Automatic screen-load performance transactions
 export default wrap(RootLayout);
-

@@ -2,10 +2,10 @@
 
 /** Format a date string to a readable format e.g. "24 Jun 2026" */
 export const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+  return new Date(dateString).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 };
 

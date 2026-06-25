@@ -1,4 +1,4 @@
 export enum StoragesEnum {
-    ASYNC_STORAGE = 'async_storage',
-    MMKV = 'mmkv',
+  ASYNC_STORAGE = "async_storage",
+  MMKV = "mmkv",
 }

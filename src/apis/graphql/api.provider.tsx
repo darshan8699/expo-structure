@@ -1,6 +1,6 @@
-import React from 'react';
-import { ApolloProvider } from '@apollo/client';
-import { client } from './graphql.client';
+import React from "react";
+import { ApolloProvider } from "@apollo/client";
+import { client } from "./graphql.client";
 
 interface ApiProviderProps {
   children: React.ReactNode;

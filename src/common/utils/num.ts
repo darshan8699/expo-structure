@@ -1,3 +1,3 @@
 export const isNumeric = (value: string) => {
-    return /^-?\d+$/.test(value)
-}
+  return /^-?\d+$/.test(value);
+};

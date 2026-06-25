@@ -1,3 +1,3 @@
-test('TextInput placeholder test', () => {
+test("TextInput placeholder test", () => {
   expect(true).toBe(true);
 });

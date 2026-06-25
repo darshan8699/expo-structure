@@ -5,7 +5,9 @@ export const ForgotPassword: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Forgot Password</Text>
-      <Text style={styles.subtitle}>Enter your email to recover your account.</Text>
+      <Text style={styles.subtitle}>
+        Enter your email to recover your account.
+      </Text>
     </View>
   );
 };
