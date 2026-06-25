@@ -1,8 +1,8 @@
-name: Continuous Integration & Deployment (CI/CD)
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, staging]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -28,9 +28,28 @@ on:
           - "ios"
 
 jobs:
-  # Job 1: Run validations on the Expo project
+  # ─── Step 1: Security Scan ────────────────────────────────────────────────
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 TruffleHog Secret Scanner
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
+
+  # ─── Step 2: Expo CI (lint, test, doctor) ────────────────────────────────
   expo-ci:
-    name: Expo Structure CI
+    name: 🧪 Expo CI
+    needs: [security-scan]
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout repository
@@ -46,19 +65,49 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci
 
-      - name: 🧹 Run Lint & Type Checks
+      - name: 🧹 Lint & Type Checks
         run: npm run lint
 
-      - name: 🧪 Run Unit Tests
-        run: npm run test
+      - name: 🧪 Unit Tests
+        run: npm test
 
-      - name: 🏥 Run Expo Doctor
+      - name: 🏥 Expo Doctor
         run: npm run doctor
 
-  # Job 2: Trigger EAS cloud builds for Expo
-  # To enable this, add EXPO_TOKEN to your GitHub repository Secrets.
+  # ─── Step 3: Semantic Release (push to main or develop only) ─────────────
+  release:
+    name: 🏷️ Semantic Release
+    needs: [expo-ci]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🚀 Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+  # ─── Step 4: EAS Build (main push or manual dispatch only) ───────────────
   eas-build:
-    name: Trigger EAS Build
+    name: 📦 EAS Build
     needs: [expo-ci]
     if: |
       (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
@@ -75,7 +124,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
-      - name: Setup EAS
+      - name: ⚙️ Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
@@ -85,34 +134,26 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci
 
-      # Android Development Build
-      - name: 🚀 Trigger EAS Development Build (Android)
+      - name: 🚀 EAS Development Build (Android)
         if: |
           (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
           (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
         run: eas build --platform android --profile development --non-interactive
 
-      # iOS Simulator Development Build
-      - name: 🚀 Trigger EAS Development Build (iOS Simulator)
+      - name: 🚀 EAS Development Build (iOS Simulator)
         if: |
           (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
           (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'development' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
         run: eas build --platform ios --profile development-simulator --non-interactive
 
-      # Staging Build (Triggered manually via workflow dispatch)
-      - name: 🚀 Trigger EAS Staging Build
+      - name: 🚀 EAS Staging Build
         if: |
-          (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'staging')
+          github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'staging'
         run: eas build --platform ${{ github.event.inputs.platform }} --profile staging --non-interactive
 
-      # Production Build (Triggered manually)
-      - name: 🚀 Trigger EAS Production Build & Submit
+      - name: 🚀 EAS Production Build & Submit
         if: |
-          (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'production')
+          github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'production'
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            PLATFORM="${{ github.event.inputs.platform }}"
-          else
-            PLATFORM="all"
-          fi
+          PLATFORM="${{ github.event.inputs.platform }}"
           eas build --platform "$PLATFORM" --profile production --non-interactive --auto-submit
