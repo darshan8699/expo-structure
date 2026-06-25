@@ -17,11 +17,4 @@ export const MOCK_USERS: User[] = [
         role: 'user',
         createdAt: '2024-03-22T10:00:00Z',
     },
-    {
-        id: '3',
-        name: 'Carol White',
-        email: 'carol@example.com',
-        role: 'guest',
-        createdAt: '2024-06-01T14:45:00Z',
-    },
 ]
