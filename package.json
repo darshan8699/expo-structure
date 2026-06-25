@@ -1,7 +1,7 @@
 {
   "name": "expostructure",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "@apollo/client": "^3.11.10",
     "@expo/ui": "~56.0.18",
