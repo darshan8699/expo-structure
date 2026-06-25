@@ -14,6 +14,8 @@
 8. [Expo Go vs Development Build](#expo-go-vs-development-build)
 9. [Convert to Development Build](#convert-to-development-build)
 10. [Troubleshooting](#troubleshooting)
+11. [Tools & Features](#tools--features)
+12. [NPM Install vs CI](#npm-install-vs-ci)
 
 ---
 
@@ -168,6 +170,19 @@ A custom version of Expo built specifically for your project. It supports any na
 | Best for                   | Prototyping / learning         | Real app development        |
 
 > **Rule of thumb:** Start with Expo Go. Switch to Development Build as soon as you need any native package (e.g. Stripe, Firebase, BLE, custom Camera).
+
+### When to Create a New Development Build
+
+You only need to trigger a new cloud build (e.g., `npm run build:dev:ios`) when you change the underlying **native code** (Objective-C/Java) of the app. 
+
+**🚨 WHEN you MUST create a new build:**
+- **Installing native packages:** When you install libraries that interact with the OS hardware/features (e.g., `@sentry/react-native`, `expo-updates`, `expo-camera`, `react-native-reanimated`, `expo-location`).
+- **Changing native configurations:** Modifying `app.json` settings like the bundle identifier, package name, splash screen, or adding new permissions.
+- **Upgrading Expo:** Upgrading to a new Expo SDK version.
+
+**🟢 WHEN you DO NOT need a new build (just press `r` to reload):**
+- **Writing UI and Logic:** Creating new React components, screens, styling, or hooks.
+- **Installing pure JavaScript packages:** Libraries without native dependencies (e.g., `lodash`, `axios`, `date-fns`, `redux`).
 
 ---
 
@@ -382,6 +397,43 @@ npx expo run:ios
 ```
 
 > This generates `android/` and `ios/` folders in your project (like React Native CLI).
+
+---
+
+## Tools & Features
+
+| Tool | Purpose | How it's Used |
+|---|---|---|
+| **CI/CD (GitHub Actions)** | Automated Pipelines | Automatically runs security scans, test coverage, and semantic release when code is pushed or a PR is created. |
+| **EAS (Expo Application Services)** | Cloud Builds | Handles compiling the app into native Android (`.apk`/`.aab`) and iOS (`.ipa`) binaries in the cloud. |
+| **Husky** | Git Hooks Manager | Intercepts `git commit` commands to automatically run `lint-staged` and `commitlint` before saving the commit. |
+| **Lint-Staged** | Fast Linting | Runs ESLint and Prettier *only* on the files you are currently trying to commit, keeping pre-commit checks fast. |
+| **Prettier & ESLint** | Formatting & Linting | Enforces consistent code style and catches programmatic errors before code is pushed. |
+| **Commitlint** | Commit Enforcement | Forces developers to use Conventional Commits (e.g., `feat:`, `fix:`) so that Semantic Release can understand the history. |
+| **Semantic Release** | Automated Versioning | Analyzes commit messages, automatically bumps versions, creates changelogs, and tags releases without human intervention. |
+| **Maestro** | End-to-End Testing | A simple, declarative UI testing framework. It simulates a real user tapping and typing through the app. |
+| **Jest** | Unit Testing | Framework for writing unit tests to ensure individual functions and components work correctly. |
+| **TruffleHog** | Security Scanning | A GitHub Action that scans every commit for accidentally leaked API keys, tokens, or passwords. |
+
+---
+
+## NPM Install vs CI
+
+When managing dependencies, it is important to know when to use `npm install` versus `npm ci`.
+
+### `npm install` (Use for Local Development)
+- **When to use:** When you are working on your computer locally, or when you are adding/updating a new package.
+- **What it does:** It looks at `package.json`, installs the packages, and if a newer version of a minor/patch package exists (based on the `^` or `~` symbols), it might install that newer version. It will then **update** your `package-lock.json` file.
+
+### `npm ci` (Use for CI/CD and Onboarding)
+*(CI stands for Continuous Integration)*
+- **When to use:** In GitHub Actions, Bitbucket Pipelines, or when a new developer joins the team and wants a 100% perfectly clean setup ("onboarding").
+- **What it does:** It completely deletes your existing `node_modules` folder. It bypasses `package.json` entirely and reads strictly from `package-lock.json`. It will **never** update `package-lock.json` or bump version numbers.
+
+**Summary:** 
+- In **GitHub Actions / Pipelines:** Always use `npm ci`.
+- When **onboarding** (cloning the repo for the first time): `npm ci` is best, as it guarantees you match the team perfectly.
+- When **developing locally** (day-to-day): Use `npm install`.
 
 ---
 

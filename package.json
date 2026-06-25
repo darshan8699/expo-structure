@@ -62,7 +62,8 @@
     "test": "jest",
     "test:e2e:local": "~/.maestro/bin/maestro --platform android test .maestro; ~/.maestro/bin/maestro --platform ios test .maestro",
     "prepare": "husky",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "test:coverage": "jest --watchAll=false --coverage --ci --silent --logHeapUsage --w=3"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.1.0",
