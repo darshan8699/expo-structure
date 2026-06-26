@@ -39,12 +39,15 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: 📦 Install Dependencies
         run: npm ci
+
+      - name: 💅 Check Prettier Formatting
+        run: npm run format:check
 
       - name: 🧹 Run Lint & Type Checks
         run: npm run lint
@@ -55,7 +58,65 @@ jobs:
       - name: 🏥 Run Expo Doctor
         run: npm run doctor
 
-  # Job 2: Trigger EAS cloud builds for Expo
+  # Job 2: Test coverage + Codacy upload (develop branch only, mirrors asthma Bitbucket pipeline)
+  test-coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    needs: [expo-ci]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 📊 Run Tests with Coverage
+        run: npm run test:coverage
+
+      - name: 📤 Upload Coverage to Codacy
+        if: env.CODACY_PROJECT_TOKEN != ''
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/lcov.info
+
+  # Job 3: Semantic Release (main branch only)
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    needs: [expo-ci]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🚀 Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+
+  # Job 4: Trigger EAS cloud builds for Expo
   # To enable this, add EXPO_TOKEN to your GitHub repository Secrets.
   eas-build:
     name: Trigger EAS Build
@@ -71,7 +132,7 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "npm"
           cache-dependency-path: package-lock.json
 
@@ -116,3 +177,4 @@ jobs:
             PLATFORM="all"
           fi
           eas build --platform "$PLATFORM" --profile production --non-interactive --auto-submit
+

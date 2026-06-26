@@ -1,11 +1,1 @@
-# Exit immediately if any check fails
-set -e
-
-echo "🔍 Running pre-commit checks..."
-
-# Lint and test Expo project
-echo "📦 Checking Expo project..."
-npm run lint
-npm run test
-
-echo "✅ All checks passed successfully! Proceeding with commit."
+npx lint-staged
