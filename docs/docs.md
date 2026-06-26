@@ -517,7 +517,7 @@ Config in [`package.json`](../package.json) under the `"release"` key.
 
 ## CI/CD & GitHub Actions
 
-Two workflow files in [`.github/workflows/`](../.github/workflows/):
+Two workflow files are located in the [`.github/workflows/`](../.github/workflows/) directory:
 
 ### `ci.yml` — Continuous Integration & Deployment
 
