@@ -1,0 +1,47 @@
+name: Security & Secrets Scan
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # Job 1: Secrets scanning with GitLeaks (mirrors asthma's atlassian/git-secrets-scan)
+  gitleaks:
+    name: 🔐 Secrets Scan (GitLeaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Run GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: set GITLEAKS_LICENSE for org-level scans
+          # GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # Job 2: Dependency vulnerability audit
+  npm-audit:
+    name: 🛡️ Dependency Audit (npm audit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: 📦 Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔎 Run npm audit (high severity+)
+        run: npm audit --audit-level=high
+        continue-on-error: true
