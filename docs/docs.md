@@ -437,7 +437,6 @@ npm run reset-project
 | `m` | Dev menu     |
 | `j` | Debugger     |
 
-
 ---
 
 ## Developer Tooling
@@ -461,15 +460,15 @@ npm run format:check    # Check formatting (used in CI)
 
 Every commit message must follow the [Conventional Commits](https://www.conventionalcommits.org/) spec. Enforced via the `commit-msg` husky hook.
 
-| Type | When to use |
-| -------- | ------------------------------------------- |
-| `feat:` | New feature |
-| `fix:` | Bug fix |
-| `chore:` | Tooling, config, dependency changes |
-| `docs:` | Documentation only |
+| Type        | When to use                            |
+| ----------- | -------------------------------------- |
+| `feat:`     | New feature                            |
+| `fix:`      | Bug fix                                |
+| `chore:`    | Tooling, config, dependency changes    |
+| `docs:`     | Documentation only                     |
 | `refactor:` | Code change without feature or bug fix |
-| `test:` | Adding or updating tests |
-| `ci:` | CI/CD changes |
+| `test:`     | Adding or updating tests               |
+| `ci:`       | CI/CD changes                          |
 
 ```bash
 # ✅ Good
@@ -491,6 +490,7 @@ git commit -m "wip"
 The `pre-commit` hook runs lint-staged — it only processes **staged files**, not the entire codebase. This makes commits fast.
 
 Staged `.ts`/`.tsx` files automatically get:
+
 1. `expo lint --fix` — auto-fix ESLint issues
 2. `prettier --write` — auto-format code
 
@@ -503,6 +503,7 @@ Config in [`.lintstagedrc.json`](../.lintstagedrc.json).
 Automated versioning and changelog generation based on commit history. Runs on every push to `main`.
 
 **How it works:**
+
 - Analyses commit messages since the last release
 - `feat:` commits → bump **minor** version (`1.0.0` → `1.1.0`)
 - `fix:` commits → bump **patch** version (`1.0.0` → `1.0.1`)
@@ -522,29 +523,30 @@ Two workflow files in [`.github/workflows/`](../.github/workflows/):
 
 #### What runs on every push/PR to `develop` or `main`:
 
-| Job | Steps | Triggers |
-| ----------- | ------------------------------------------ | -------------------- |
-| `expo-ci` | format:check → lint → test → expo-doctor | All pushes + PRs |
-| `test-coverage` | jest --coverage + Codacy upload | `develop` push only |
-| `semantic-release` | Auto version bump + CHANGELOG + GitHub Release | `main` push only |
-| `eas-build` | EAS cloud build (Android + iOS) | `main` push + manual |
+| Job                | Steps                                          | Triggers             |
+| ------------------ | ---------------------------------------------- | -------------------- |
+| `expo-ci`          | format:check → lint → test → expo-doctor       | All pushes + PRs     |
+| `test-coverage`    | jest --coverage + Codacy upload                | `develop` push only  |
+| `semantic-release` | Auto version bump + CHANGELOG + GitHub Release | `main` push only     |
+| `eas-build`        | EAS cloud build (Android + iOS)                | `main` push + manual |
 
 #### What runs on `develop` push:
 
-| Workflow | Job | Runs? |
-| -------- | ------------------------------------------------- | ------ |
-| CI/CD | `expo-ci` (format:check, lint, test, expo-doctor) | ✅ Yes |
-| CI/CD | `test-coverage` + Codacy upload | ✅ Yes |
-| CI/CD | `semantic-release` | ❌ `main` only |
-| CI/CD | `eas-build` | ❌ `main` only |
-| Security | GitLeaks secrets scan | ✅ Yes |
-| Security | `npm audit` (high severity) | ✅ Yes |
+| Workflow | Job                                               | Runs?          |
+| -------- | ------------------------------------------------- | -------------- |
+| CI/CD    | `expo-ci` (format:check, lint, test, expo-doctor) | ✅ Yes         |
+| CI/CD    | `test-coverage` + Codacy upload                   | ✅ Yes         |
+| CI/CD    | `semantic-release`                                | ❌ `main` only |
+| CI/CD    | `eas-build`                                       | ❌ `main` only |
+| Security | GitLeaks secrets scan                             | ✅ Yes         |
+| Security | `npm audit` (high severity)                       | ✅ Yes         |
 
 > **Semantic release is intentionally `main`-only.** It only creates real releases when merging to production.
 
 #### Manual trigger (workflow dispatch):
 
 You can manually trigger EAS builds from the GitHub Actions tab with options for:
+
 - **Build type:** `development` · `staging` · `production`
 - **Platform:** `all` · `android` · `ios`
 
@@ -554,10 +556,10 @@ You can manually trigger EAS builds from the GitHub Actions tab with options for
 
 Runs in parallel with CI on every push/PR to `develop` or `main`.
 
-| Job | Tool | What it checks |
-| ------------ | ----------------------------- | --------------------------------------------- |
-| `gitleaks` | `gitleaks/gitleaks-action@v2` | Scans git history for accidentally committed secrets/tokens/passwords |
-| `npm-audit` | `npm audit --audit-level=high` | Checks dependencies for known CVE vulnerabilities |
+| Job         | Tool                           | What it checks                                                        |
+| ----------- | ------------------------------ | --------------------------------------------------------------------- |
+| `gitleaks`  | `gitleaks/gitleaks-action@v2`  | Scans git history for accidentally committed secrets/tokens/passwords |
+| `npm-audit` | `npm audit --audit-level=high` | Checks dependencies for known CVE vulnerabilities                     |
 
 > `npm audit` uses `continue-on-error: true` — it reports vulnerabilities but doesn't block CI. Fix with `npm audit fix`.
 
@@ -565,9 +567,8 @@ Runs in parallel with CI on every push/PR to `develop` or `main`.
 
 ### GitHub Secrets Required
 
-| Secret | Required for | Where to add |
-| ----------------------- | ---------------------- | --------------------------------- |
-| `EXPO_TOKEN` | EAS cloud builds | GitHub repo → Settings → Secrets |
+| Secret                 | Required for              | Where to add                     |
+| ---------------------- | ------------------------- | -------------------------------- |
+| `EXPO_TOKEN`           | EAS cloud builds          | GitHub repo → Settings → Secrets |
 | `CODACY_PROJECT_TOKEN` | Coverage upload to Codacy | GitHub repo → Settings → Secrets |
-| `GITHUB_TOKEN` | Semantic release | Auto-provided by GitHub Actions |
-
+| `GITHUB_TOKEN`         | Semantic release          | Auto-provided by GitHub Actions  |
