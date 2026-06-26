@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/darshan8699/expo-structure/compare/v1.0.1...v1.0.2) (2026-06-26)
+
+
+### Bug Fixes
+
+* relax node engine requirement to >=22 for EAS compatibility ([004d640](https://github.com/darshan8699/expo-structure/commit/004d64038b8e1f7799cf6cc6839b6deaab0e6282))
+
 ## [1.0.1](https://github.com/darshan8699/expo-structure/compare/v1.0.0...v1.0.1) (2026-06-26)
 
 
