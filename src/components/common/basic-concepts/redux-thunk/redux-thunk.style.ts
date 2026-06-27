@@ -1,0 +1,135 @@
+import { StyleSheet } from 'react-native'
+import { Colors, BorderRadius, FontFamily, FontSize, Spacing } from '@/common/theme'
+
+export const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: Spacing.md,
+        backgroundColor: Colors.background,
+    },
+    title: {
+        fontSize: FontSize.xl,
+        fontFamily: FontFamily.bold,
+        color: Colors.text,
+        marginBottom: Spacing.xs,
+    },
+    subtitle: {
+        fontSize: FontSize.sm,
+        fontFamily: FontFamily.regular,
+        color: Colors.textMuted,
+        marginBottom: Spacing.lg,
+    },
+    card: {
+        backgroundColor: Colors.surface,
+        borderRadius: BorderRadius.lg,
+        padding: Spacing.lg,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 3,
+    },
+    btnPrimary: {
+        backgroundColor: Colors.primary,
+        paddingVertical: Spacing.md,
+        borderRadius: BorderRadius.md,
+        alignItems: 'center',
+    },
+    btnDisabled: {
+        backgroundColor: Colors.border,
+    },
+    btnText: {
+        color: '#fff',
+        fontFamily: FontFamily.bold,
+        fontSize: FontSize.md,
+    },
+    detailsContainer: {
+        marginTop: Spacing.lg,
+        minHeight: 200,
+        justifyContent: 'center',
+    },
+    loadingWrapper: {
+        alignItems: 'center',
+        gap: Spacing.sm,
+    },
+    statusText: {
+        fontFamily: FontFamily.medium,
+        color: Colors.primary,
+        fontSize: FontSize.sm,
+    },
+    errorWrapper: {
+        backgroundColor: '#FEE2E2',
+        padding: Spacing.md,
+        borderRadius: BorderRadius.md,
+        borderWidth: 1,
+        borderColor: '#FCA5A5',
+    },
+    errorText: {
+        fontFamily: FontFamily.medium,
+        color: Colors.error,
+        fontSize: FontSize.sm,
+    },
+    profileCard: {
+        alignItems: 'center',
+        padding: Spacing.md,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderRadius: BorderRadius.lg,
+        backgroundColor: Colors.background,
+    },
+    avatar: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: Colors.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: Spacing.sm,
+    },
+    avatarText: {
+        color: '#fff',
+        fontSize: FontSize.xl,
+        fontFamily: FontFamily.bold,
+    },
+    profileName: {
+        fontSize: FontSize.lg,
+        fontFamily: FontFamily.bold,
+        color: Colors.text,
+    },
+    profileMeta: {
+        fontSize: FontSize.sm,
+        fontFamily: FontFamily.regular,
+        color: Colors.textMuted,
+        marginBottom: Spacing.sm,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: Colors.border,
+        width: '100%',
+        marginVertical: Spacing.md,
+    },
+    profileDetail: {
+        fontSize: FontSize.sm,
+        fontFamily: FontFamily.medium,
+        color: Colors.text,
+        marginVertical: Spacing.xs,
+    },
+    successBadge: {
+        marginTop: Spacing.md,
+        backgroundColor: '#DCFCE7',
+        color: Colors.success,
+        fontSize: FontSize.xs,
+        fontFamily: FontFamily.semiBold,
+        paddingHorizontal: Spacing.sm,
+        paddingVertical: Spacing.xs - 2,
+        borderRadius: BorderRadius.full,
+        overflow: 'hidden',
+    },
+    placeholderText: {
+        textAlign: 'center',
+        color: Colors.textMuted,
+        fontFamily: FontFamily.regular,
+        fontSize: FontSize.sm,
+        lineHeight: 20,
+    },
+})

@@ -7,7 +7,6 @@ async function promiseChain<T>(callbacks: (() => Promise<T>)[]) {
     return output
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const safePromise = async (callback: any) => {
     try {
         const res = await callback()
