@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/darshan8699/expo-structure/compare/v1.2.0...v1.2.1) (2026-06-27)
+
+
+### Bug Fixes
+
+* eas error ([72549b8](https://github.com/darshan8699/expo-structure/commit/72549b8661b1cb54e613805ae1bee01661a9c64f))
+
 # [1.2.0](https://github.com/darshan8699/expo-structure/compare/v1.1.0...v1.2.0) (2026-06-27)
 
 
