@@ -24,8 +24,7 @@
         "backgroundImage": "./src/assets/images/android-icon-background.png",
         "monochromeImage": "./src/assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false,
-      "versionCode": 0
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
