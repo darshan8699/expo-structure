@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/darshan8699/expo-structure/compare/v1.1.0...v1.2.0) (2026-06-27)
+
+
+### Bug Fixes
+
+* test case ([3b6159d](https://github.com/darshan8699/expo-structure/commit/3b6159df020bf5c8e65619be36eedc8003cdd9d9))
+
+
+### Features
+
+* add state management, storage and queries demos ([241da92](https://github.com/darshan8699/expo-structure/commit/241da92821092d60b984e54e60109878efe43cc7))
+
 # [1.1.0](https://github.com/darshan8699/expo-structure/compare/v1.0.2...v1.1.0) (2026-06-26)
 
 
