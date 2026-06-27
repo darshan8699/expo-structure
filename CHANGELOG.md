@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/darshan8699/expo-structure/compare/v1.2.1...v1.2.2) (2026-06-27)
+
+
+### Bug Fixes
+
+* mmkv package issue ([de11af8](https://github.com/darshan8699/expo-structure/commit/de11af842bc8e355cf7e6e496983af95728eefc0))
+
 ## [1.2.1](https://github.com/darshan8699/expo-structure/compare/v1.2.0...v1.2.1) (2026-06-27)
 
 
